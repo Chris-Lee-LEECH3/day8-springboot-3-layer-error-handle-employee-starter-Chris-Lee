@@ -57,17 +57,6 @@ public class CompanyController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompany(@PathVariable int id) {
-        Company found = null;
-        for (Company c : companies) {
-            if (c.getId().equals(id)) {
-                found = c;
-                break;
-            }
-        }
-        if (found != null) {
-            companies.remove(found);
-            return;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found with id: " + id);
+        this.companyService.deleteCompanyById(id);
     }
 }

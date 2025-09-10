@@ -37,4 +37,8 @@ public class CompanyRepository {
         }
         return null;
     }
+
+    public void deleteCompanyById(int id) {
+        companies.removeIf(c -> c.getId().equals(id));
+    }
 }
