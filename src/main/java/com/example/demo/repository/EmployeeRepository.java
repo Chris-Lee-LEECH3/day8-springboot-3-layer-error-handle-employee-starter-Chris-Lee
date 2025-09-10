@@ -47,4 +47,12 @@ public class EmployeeRepository {
         return employees.set(index, found);
     }
 
+    public void deleteEmployee(int id) {
+        Employee found = this.getEmployeeById(id);
+        employees.remove(found);
+    }
+
+    public void deleteAllEmployees() {
+        employees.clear();
+    }
 }
