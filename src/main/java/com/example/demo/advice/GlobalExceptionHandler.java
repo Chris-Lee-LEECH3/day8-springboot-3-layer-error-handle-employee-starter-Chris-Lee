@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseException exceptionHandler(Exception e) {
+    public ResponseException responseStatusExceptionHandler(Exception e) {
         return new ResponseException(e.getMessage());
     }
 
@@ -36,4 +36,9 @@ public class GlobalExceptionHandler {
         return new ResponseException(e.getMessage());
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseException exceptionHandler(Exception e) {
+        return new ResponseException(e.getMessage());
+    }
 }

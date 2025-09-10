@@ -249,4 +249,11 @@ public class EmployeeControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void should_return_404_when_get_employee_by_id_not_exist() throws Exception {
+        mockMvc.perform(get("/employees/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 }
