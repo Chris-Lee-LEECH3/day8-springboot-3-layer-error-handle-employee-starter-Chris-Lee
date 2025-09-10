@@ -38,14 +38,7 @@ public class CompanyController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Company updateCompany(@PathVariable int id, @RequestBody Company updatedCompany) {
-        Company found = null;
-        for (Company c : companies) {
-            if (c.getId().equals(id)) {
-                c.setName(updatedCompany.getName());
-                return c;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found with id: " + id);
+        return companyService.updateCompany(id, updatedCompany);
     }
 
     @GetMapping("/{id}")

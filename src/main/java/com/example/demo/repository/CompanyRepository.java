@@ -38,7 +38,16 @@ public class CompanyRepository {
         return null;
     }
 
+    public Company updateCompany(Company updatedCompany) {
+        Company company = getCompanyById(updatedCompany.getId());
+        company.setName(updatedCompany.getName());
+        int index = companies.indexOf(company);
+        companies.set(index, company);
+        return company;
+    }
+
     public void deleteCompanyById(int id) {
         companies.removeIf(c -> c.getId().equals(id));
     }
+
 }
