@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.entity.Employee;
 import com.example.demo.exception.InvalidAgeEmployeeException;
+import com.example.demo.exception.InvalidSalaryEmployeeException;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.service.EmployeeService;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,12 @@ public class EmployeeServiceTest {
     public void should_throw_exception_when_create_a_employee_of_greater_that_65_or_less_than_18() {
         Employee employee = new Employee(null, "Tom", 15, "MALE", 2000.0);
         assertThrows(InvalidAgeEmployeeException.class, () -> employeeService.createEmployee(employee));
+    }
+
+    @Test
+    public void should_throw_exception_when_create_a_employee_of_greater_or_equal_30_and_salary_below_20000() {
+        Employee employee = new Employee(null, "Tom", 30, "MALE", 19999.0);
+        assertThrows(InvalidSalaryEmployeeException.class, () -> employeeService.createEmployee(employee));
     }
 
 }
