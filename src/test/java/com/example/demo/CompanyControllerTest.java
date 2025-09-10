@@ -23,19 +23,16 @@ public class CompanyControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private CompanyController companyController;
-
     @BeforeEach
-    void cleanCompanies() {
-        companyController.empty();
+    void cleanCompanies() throws Exception {
+        mockMvc.perform(delete("/companies/all").contentType(MediaType.APPLICATION_JSON));
     }
 
     private MvcResult createCompanyByName(String name) throws Exception {
         Company company = new Company(null, name);
         Gson gson = new Gson();
         String johnStr = gson.toJson(company);
-        return mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(johnStr)).andReturn();
+        return mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(johnStr)).andReturn();
     }
 
     @Test
@@ -57,9 +54,7 @@ public class CompanyControllerTest {
 
     @Test
     void should_return_all_companies_when_no_param() throws Exception {
-        Company spring = new Company();
-        spring.setName("Spring");
-        companyController.createCompany(spring);
+        createCompanyByName("Spring");
 
         mockMvc.perform(get("/companies").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -68,9 +63,9 @@ public class CompanyControllerTest {
 
     @Test
     void should_return_company_when_get_id_found() throws Exception {
-        Company spring = new Company();
-        spring.setName("Spring");
-        Company company = companyController.createCompany(spring);
+        String json = createCompanyByName("Spring").getResponse().getContentAsString();
+        Gson gson = new Gson();
+        Company company = gson.fromJson(json, Company.class);
 
         MockHttpServletRequestBuilder request = get("/companies/" + company.getId())
                 .contentType(MediaType.APPLICATION_JSON);
@@ -82,9 +77,10 @@ public class CompanyControllerTest {
 
     @Test
     void should_return_company_when_put_with_id_found() throws Exception {
-        Company spring = new Company();
-        spring.setName("Spring");
-        Company company = companyController.createCompany(spring);
+        String json = createCompanyByName("Spring").getResponse().getContentAsString();
+        Gson gson = new Gson();
+        Company company = gson.fromJson(json, Company.class);
+
         String requestBody = """
                 {
                     "name": "Spring2"
@@ -102,9 +98,9 @@ public class CompanyControllerTest {
 
     @Test
     void should_return_no_content_when_delete_id_found() throws Exception {
-        Company spring = new Company();
-        spring.setName("Spring");
-        Company company = companyController.createCompany(spring);
+        String json = createCompanyByName("Spring").getResponse().getContentAsString();
+        Gson gson = new Gson();
+        Company company = gson.fromJson(json, Company.class);
 
         MockHttpServletRequestBuilder request = delete("/companies/" + company.getId())
                 .contentType(MediaType.APPLICATION_JSON);
@@ -115,14 +111,11 @@ public class CompanyControllerTest {
 
     @Test
     void should_return_truncated_companies_when_page_size_is_limit() throws Exception {
-        Company spring = new Company();
-        spring.setName("Spring");
-        companyController.createCompany(spring);
-        companyController.createCompany(spring);
-        companyController.createCompany(spring);
-        companyController.createCompany(spring);
-        companyController.createCompany(spring);
-        companyController.createCompany(spring);
+        String companyName = "Spring";
+        for (int i = 0; i < 12; i++) {
+            createCompanyByName(companyName);
+        }
+
         MockHttpServletRequestBuilder request = get("/companies?page=1&size=5")
                 .contentType(MediaType.APPLICATION_JSON);
 

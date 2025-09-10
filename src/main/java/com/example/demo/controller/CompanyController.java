@@ -52,4 +52,11 @@ public class CompanyController {
     public void deleteCompany(@PathVariable int id) {
         this.companyService.deleteCompanyById(id);
     }
+
+    @DeleteMapping("/all")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAllCompanies() {
+        this.companyService.deleteAllCompanies();
+    }
+
 }

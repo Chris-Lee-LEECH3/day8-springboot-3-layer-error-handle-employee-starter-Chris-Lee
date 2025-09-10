@@ -38,8 +38,8 @@ public class CompanyRepository {
         return null;
     }
 
-    public Company updateCompany(Company updatedCompany) {
-        Company company = getCompanyById(updatedCompany.getId());
+    public Company updateCompany(int id, Company updatedCompany) {
+        Company company = getCompanyById(id);
         company.setName(updatedCompany.getName());
         int index = companies.indexOf(company);
         companies.set(index, company);
@@ -50,4 +50,7 @@ public class CompanyRepository {
         companies.removeIf(c -> c.getId().equals(id));
     }
 
+    public void deleteAllCompanies() {
+        companies.clear();
+    }
 }
