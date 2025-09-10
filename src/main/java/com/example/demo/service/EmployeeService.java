@@ -52,10 +52,6 @@ public class EmployeeService {
 
     public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
         Employee found = this.getEmployeeById(id);
-        if (found == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
-        }
-
         if (!found.getActive()) {
             throw new UpdateInActiveEmployeeException("Cannot update an inactive employee with id: " + id);
         }
@@ -65,9 +61,6 @@ public class EmployeeService {
 
     public void deleteEmployeeById(int id) {
         Employee found = this.getEmployeeById(id);
-        if (found == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
-        }
         found.setActive(false);
         employeeRepository.updateEmployee(id, found);
     }
