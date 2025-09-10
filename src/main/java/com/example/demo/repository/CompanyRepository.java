@@ -28,4 +28,13 @@ public class CompanyRepository {
         companies.add(company);
         return company;
     }
+
+    public Company getCompanyById(int id) {
+        for (Company c : companies) {
+            if (c.getId().equals(id)) {
+                return c;
+            }
+        }
+        return null;
+    }
 }
