@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.Employee;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,16 @@ public class EmployeeRepository {
         employee.setId(employees.size() + 1);
         employees.add(employee);
         return employee;
+    }
+
+    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
+        Employee found = this.getEmployeeById(id);
+        found.setName(updatedEmployee.getName());
+        found.setAge(updatedEmployee.getAge());
+        found.setGender(updatedEmployee.getGender());
+        found.setSalary(updatedEmployee.getSalary());
+        int index = employees.indexOf(found);
+        return employees.set(index, found);
     }
 
 }

@@ -5,11 +5,13 @@ import com.example.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -35,6 +37,14 @@ public class EmployeeService {
 
     public Employee createEmployee(Employee employee) {
         return employeeRepository.createEmployee(employee);
+    }
+
+    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
+        Employee found = this.getEmployeeById(id);
+        if (found == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
+        }
+        return employeeRepository.updateEmployee(id, updatedEmployee);
     }
 
 }
