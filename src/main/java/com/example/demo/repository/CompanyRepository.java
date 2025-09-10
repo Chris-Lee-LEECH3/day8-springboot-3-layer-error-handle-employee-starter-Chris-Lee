@@ -22,4 +22,10 @@ public class CompanyRepository {
         return companies;
     }
 
+    public Company createCompany(Company company) {
+        int id = companies.size() + 1;
+        company.setId(id);
+        companies.add(company);
+        return company;
+    }
 }
