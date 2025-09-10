@@ -209,6 +209,17 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    void should_return_400_when_create_employee_with_age_larger_than_65() throws Exception {
+        Employee john = new Employee(null, "John Smith", 66, "Male", 60000.0);
+        Gson gson = new Gson();
+        String requestBody = gson.toJson(john);
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void should_return_400_when_create_employee_within_age_is_older_than_30_and_salary_below_20000() throws Exception {
         Employee john = new Employee(null, "John Smith", 31, "Male", 19999.9);
         Gson gson = new Gson();
