@@ -1,8 +1,16 @@
-package com.example.demo;
+package com.example.demo.entity;
 
 public class Company {
     private Integer id;
     private String name;
+
+    public Company() {}
+
+    public Company(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

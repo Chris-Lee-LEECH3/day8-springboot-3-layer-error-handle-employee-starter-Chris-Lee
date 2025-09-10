@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import com.example.demo.controller.CompanyController;
+import com.example.demo.entity.Company;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -25,6 +29,13 @@ public class CompanyControllerTest {
     @BeforeEach
     void cleanCompanies() {
         companyController.empty();
+    }
+
+    private MvcResult createCompanyByName(String name) throws Exception {
+        Company company = new Company(null, name);
+        Gson gson = new Gson();
+        String johnStr = gson.toJson(company);
+        return mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(johnStr)).andReturn();
     }
 
     @Test
