@@ -197,5 +197,45 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.active").value(false));
     }
 
+    @Test
+    void should_return_400_when_create_employee_with_age_less_than_18() throws Exception {
+        Employee john = new Employee(null, "John Smith", 17, "Male", 60000.0);
+        Gson gson = new Gson();
+        String requestBody = gson.toJson(john);
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_400_when_create_employee_within_age_is_older_than_30_and_salary_below_20000() throws Exception {
+        Employee john = new Employee(null, "John Smith", 31, "Male", 19999.9);
+        Gson gson = new Gson();
+        String requestBody = gson.toJson(john);
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_400_when_update_employee_with_active_false() throws Exception {
+        Gson gson = new Gson();
+        String json = createJohnSmith().getResponse().getContentAsString();
+        Employee john = gson.fromJson(json, Employee.class);
+
+        mockMvc.perform(delete("/employees/" + john.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        john.setSalary(45000);
+        String johnStr = gson.toJson(john);
+
+        mockMvc.perform(put("/employees/" + john.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(johnStr))
+                .andExpect(status().isBadRequest());
+    }
 
 }
