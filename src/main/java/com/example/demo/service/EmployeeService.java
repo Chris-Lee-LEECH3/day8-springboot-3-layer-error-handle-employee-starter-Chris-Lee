@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CompanyResponse;
 import com.example.demo.dto.EmployeeRequest;
 import com.example.demo.dto.EmployeeResponse;
 import com.example.demo.dto.mapper.EmployeeMapper;
@@ -30,25 +29,27 @@ public class EmployeeService {
     }
 
     public List<EmployeeResponse> getEmployees(String gender, Integer page, Integer size) {
-        return employeeMapper.toResponse(getEmployeeResponses(gender, page, size));
+        return EmployeeMapper.toResponse(getEmployeeResponses(gender, page, size));
     }
 
     private List<Employee> getEmployeeResponses(String gender, Integer page, Integer size) {
-        if (gender == null) {
-            if (page == null || size == null) {
-                return employeeRepository.findAll();
-            } else {
-                Pageable pageable = PageRequest.of(page - 1, size);
-                return employeeRepository.findAll(pageable).getContent();
-            }
-        } else {
-            if (page == null || size == null) {
-                return employeeRepository.findEmployeesByGender(gender);
-            } else {
+        boolean hasGender = gender != null;
+        boolean hasPagination = page != null && size != null;
+
+        if (hasGender) {
+            if (hasPagination) {
                 Pageable pageable = PageRequest.of(page - 1, size);
                 return employeeRepository.findEmployeesByGender(gender, pageable);
             }
+            return employeeRepository.findEmployeesByGender(gender);
         }
+
+        if (hasPagination) {
+            Pageable pageable = PageRequest.of(page - 1, size);
+            return employeeRepository.findAll(pageable).getContent();
+        }
+
+        return employeeRepository.findAll();
     }
 
     public EmployeeResponse getEmployeeById(int id) {
@@ -56,11 +57,11 @@ public class EmployeeService {
         if (employee == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
         }
-        return employeeMapper.toResponse(employee);
+        return EmployeeMapper.toResponse(employee);
     }
 
     public EmployeeResponse createEmployee(EmployeeRequest createEmployeeRequest) {
-        Employee employee = employeeMapper.toEntity(createEmployeeRequest);
+        Employee employee = EmployeeMapper.toEntity(createEmployeeRequest);
         if (employee.getAge() == null) {
             throw new InvalidAgeEmployeeException("The age of employee must be provided");
         }
@@ -74,17 +75,17 @@ public class EmployeeService {
         }
 
         employee.setActive(true);
-        return employeeMapper.toResponse(employeeRepository.save(employee));
+        return EmployeeMapper.toResponse(employeeRepository.save(employee));
     }
 
     public EmployeeResponse updateEmployee(int id, EmployeeRequest updatedEmployeeRequest) {
-        Employee updatedEmployee = employeeMapper.toEntity(updatedEmployeeRequest);
+        Employee updatedEmployee = EmployeeMapper.toEntity(updatedEmployeeRequest);
         EmployeeResponse found = this.getEmployeeById(id);
         if (!found.getActive()) {
             throw new UpdateInActiveEmployeeException("Cannot update an inactive employee with id: " + id);
         }
         updatedEmployee.setId(found.getId());
-        return employeeMapper.toResponse(employeeRepository.save(updatedEmployee));
+        return EmployeeMapper.toResponse(employeeRepository.save(updatedEmployee));
     }
 
     public void updateCompanyIdForEmployees(List<Employee> employees, int companyId) {

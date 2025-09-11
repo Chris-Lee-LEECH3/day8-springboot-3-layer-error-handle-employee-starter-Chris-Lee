@@ -8,13 +8,10 @@ import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Company;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.ICompanyRepository;
-import com.example.demo.repository.IEmployeeRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -68,7 +65,7 @@ public class CompanyService {
         return CompanyMapper.toResponse(company);
     }
 
-    public CompanyResponse updateCompany(@PathVariable int id, @RequestBody CompanyRequest updatedCompanyRequest) {
+    public CompanyResponse updateCompany(int id, CompanyRequest updatedCompanyRequest) {
         CompanyResponse found = getCompanyById(id);
         Company updatedCompany = CompanyMapper.toEntity(updatedCompanyRequest);
         updatedCompany.setId(found.getId());
