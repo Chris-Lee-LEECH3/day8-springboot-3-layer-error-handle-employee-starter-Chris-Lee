@@ -4,11 +4,11 @@ import com.example.demo.entity.Employee;
 import com.example.demo.exception.UpdateInActiveEmployeeException;
 import com.example.demo.exception.InvalidAgeEmployeeException;
 import com.example.demo.exception.InvalidSalaryEmployeeException;
-import com.example.demo.repository.EmployeeRepository;
+import com.example.demo.repository.IEmployeeRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -16,18 +16,32 @@ import java.util.List;
 @Service
 public class EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
+    private final IEmployeeRepository employeeRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(IEmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
     public List<Employee> getEmployees(String gender, Integer page, Integer size) {
-        return employeeRepository.getEmployees(gender, page, size);
+        if (gender == null) {
+            if (page == null || size == null) {
+                return employeeRepository.findAll();
+            } else {
+                Pageable pageable = PageRequest.of(page - 1, size);
+                return employeeRepository.findAll(pageable).getContent();
+            }
+        } else {
+            if (page == null || size == null) {
+                return employeeRepository.findEmployeesByGender(gender);
+            } else {
+                Pageable pageable = PageRequest.of(page - 1, size);
+                return employeeRepository.findEmployeesByGender(gender, pageable);
+            }
+        }
     }
 
     public Employee getEmployeeById(int id) {
-        Employee employee = employeeRepository.getEmployeeById(id);
+        Employee employee = employeeRepository.findById(id).orElse(null);
         if (employee == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
         }
@@ -47,25 +61,23 @@ public class EmployeeService {
             throw new InvalidSalaryEmployeeException("The salary of employee age greater than or equal to 30 must be at least 20000.");
         }
 
-        return employeeRepository.createEmployee(employee);
+        employee.setActive(true);
+        return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
+    public Employee updateEmployee(int id, Employee updatedEmployee) {
         Employee found = this.getEmployeeById(id);
         if (!found.getActive()) {
             throw new UpdateInActiveEmployeeException("Cannot update an inactive employee with id: " + id);
         }
-
-        return employeeRepository.updateEmployee(id, updatedEmployee);
+        updatedEmployee.setId(found.getId());
+        return employeeRepository.save(updatedEmployee);
     }
 
     public void deleteEmployeeById(int id) {
         Employee found = this.getEmployeeById(id);
         found.setActive(false);
-        employeeRepository.updateEmployee(id, found);
+        employeeRepository.save(found);
     }
 
-    public void deleteAllEmployees() {
-        employeeRepository.deleteAllEmployees();
-    }
 }

@@ -47,12 +47,4 @@ public class EmployeeController {
         employeeService.deleteEmployeeById(id);
     }
 
-    @DeleteMapping("/all")
-    public void deleteAllEmployees() {
-        employeeService.deleteAllEmployees();
-    }
-
-    public void empty() {
-        employees.clear();
-    }
 }
