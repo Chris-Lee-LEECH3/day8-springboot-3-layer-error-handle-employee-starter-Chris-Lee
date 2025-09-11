@@ -15,14 +15,25 @@ public class CompanyMapper {
     public static CompanyResponse toResponse(Company company) {
         CompanyResponse companyResponse = new CompanyResponse();
         BeanUtils.copyProperties(company, companyResponse);
-        List<EmployeeResponse> employees = new ArrayList<>();
-        if (company.getEmployees() != null) {
-            company.getEmployees().forEach(employee -> {
-                employees.add(EmployeeMapper.toResponse(employee));
-            });
+        List<Employee> employees = company.getEmployees();
+        List<EmployeeResponse> employeesResponse = new ArrayList<>();
+
+        if (employees != null) {
+            if (!employees.isEmpty()) {
+                employeesResponse = getEmployeesResponse(employees);
+            }
         }
-        companyResponse.setEmployees(employees);
+
+        companyResponse.setEmployees(employeesResponse);
         return companyResponse;
+    }
+
+    private static List<EmployeeResponse> getEmployeesResponse(List<Employee> employees) {
+        List<EmployeeResponse> employeesResponse = new ArrayList<>();
+        employees.forEach(employee -> {
+            employeesResponse.add(EmployeeMapper.toResponse(employee));
+        });
+        return employeesResponse;
     }
 
     public static List<CompanyResponse> toResponse(List<Company> companies) {
