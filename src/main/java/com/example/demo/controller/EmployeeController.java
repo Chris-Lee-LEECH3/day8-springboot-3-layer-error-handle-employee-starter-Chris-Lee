@@ -5,6 +5,7 @@ import com.example.demo.dto.EmployeeResponse;
 import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Employee;
 import com.example.demo.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +33,13 @@ public class EmployeeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EmployeeResponse createEmployee(@RequestBody EmployeeRequest employee) {
+    public EmployeeResponse createEmployee(@Valid @RequestBody EmployeeRequest employee) {
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeResponse updateEmployee(@PathVariable int id, @RequestBody EmployeeRequest updatedEmployee) {
+    public EmployeeResponse updateEmployee(@PathVariable int id, @Valid @RequestBody EmployeeRequest updatedEmployee) {
         return employeeService.updateEmployee(id, updatedEmployee);
     }
 

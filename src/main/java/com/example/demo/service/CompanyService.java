@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.CompanyRequest;
+import com.example.demo.dto.CompanyResponse;
+import com.example.demo.dto.mapper.CompanyMapper;
 import com.example.demo.entity.Company;
 import com.example.demo.repository.ICompanyRepository;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +24,11 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public List<Company> getCompanies(Integer page, Integer size) {
+    public List<CompanyResponse> getCompanies(Integer page, Integer size) {
+        return CompanyMapper.toResponse(getAllCompany(page, size));
+    }
+
+    private List<Company> getAllCompany(Integer page, Integer size) {
         if (page == null || size == null) {
             return companyRepository.findAll();
         }
@@ -29,26 +36,28 @@ public class CompanyService {
         return companyRepository.findAll(pageable).getContent();
     }
 
-    public Company createCompany(Company company) {
-        return companyRepository.save(company);
+    public CompanyResponse createCompany(CompanyRequest company) {
+        Company newCompany = CompanyMapper.toEntity(company);
+        return CompanyMapper.toResponse(companyRepository.save(newCompany));
     }
 
-    public Company getCompanyById(int id) {
+    public CompanyResponse getCompanyById(int id) {
         Company company = companyRepository.findById(id).orElse(null);
         if (company == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found with id: " + id);
         }
-        return company;
+        return CompanyMapper.toResponse(company);
     }
 
-    public Company updateCompany(@PathVariable int id, @RequestBody Company updatedCompany) {
-        Company found = getCompanyById(id);
+    public CompanyResponse updateCompany(@PathVariable int id, @RequestBody CompanyRequest updatedCompanyRequest) {
+        CompanyResponse found = getCompanyById(id);
+        Company updatedCompany = CompanyMapper.toEntity(updatedCompanyRequest);
         updatedCompany.setId(found.getId());
-        return companyRepository.save(updatedCompany);
+        return CompanyMapper.toResponse(companyRepository.save(updatedCompany));
     }
 
     public void deleteCompanyById(int id) {
-        Company found = getCompanyById(id);
+        CompanyResponse found = getCompanyById(id);
         companyRepository.deleteById(found.getId());
     }
 
