@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.dto.EmployeeRequest;
+import com.example.demo.dto.EmployeeResponse;
 import com.example.demo.entity.Employee;
 import com.example.demo.exception.UpdateInActiveEmployeeException;
 import com.example.demo.exception.InvalidAgeEmployeeException;
@@ -29,30 +31,38 @@ public class EmployeeServiceTest {
 
     @Test
     public void should_return_throw_exception_when_create_a_employee() {
-        Employee  employee = new Employee(null, "Tom", 20, "MALE", 2000.0);
+        Employee employee = new Employee(1, "Tom", 20, "MALE", 2000.0);
+        EmployeeRequest employeeRequest = new EmployeeRequest( "Tom", 20, "MALE", 2000.0);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
-        Employee employeeResult = employeeService.createEmployee(employee);
+
+        EmployeeResponse employeeResult = employeeService.createEmployee(employeeRequest);
         assertEquals(employeeResult.getAge(), employee.getAge());
     }
 
     @Test
     public void should_throw_exception_when_create_a_employee_of_greater_that_65_or_less_than_18() {
-        Employee employee = new Employee(null, "Tom", 15, "MALE", 2000.0);
-        assertThrows(InvalidAgeEmployeeException.class, () -> employeeService.createEmployee(employee));
+        Employee employee = new Employee(1, "Tom", 15, "MALE", 2000.0);
+        EmployeeRequest employeeRequest = new EmployeeRequest( "Tom", 15, "MALE", 2000.0);
+
+        assertThrows(InvalidAgeEmployeeException.class, () -> employeeService.createEmployee(employeeRequest));
     }
 
     @Test
     public void should_throw_exception_when_create_a_employee_of_greater_or_equal_30_and_salary_below_20000() {
-        Employee employee = new Employee(null, "Tom", 30, "MALE", 19999.0);
-        assertThrows(InvalidSalaryEmployeeException.class, () -> employeeService.createEmployee(employee));
+        Employee employee = new Employee(1, "Tom", 30, "MALE", 19999.0);
+        EmployeeRequest employeeRequest = new EmployeeRequest( "Tom", 30, "MALE", 19999.0);
+
+        assertThrows(InvalidSalaryEmployeeException.class, () -> employeeService.createEmployee(employeeRequest));
     }
 
     @Test
     public void should_return_employee_active_true_when_create_employee() {
         Employee employee = new Employee(null, "Tom", 30, "MALE", 20000.0);
         Employee createdEmployee = new Employee(1, "Tom", 30, "MALE", 20000.0, true);
+        EmployeeRequest employeeRequest = new EmployeeRequest( "Tom", 30, "MALE", 20000.0);
         when(employeeRepository.save(any(Employee.class))).thenReturn(createdEmployee);
-        Employee employeeResult = employeeService.createEmployee(employee);
+
+        EmployeeResponse employeeResult = employeeService.createEmployee(employeeRequest);
         assertTrue(employeeResult.getActive());
     }
 
@@ -70,8 +80,10 @@ public class EmployeeServiceTest {
     @Test
     public void should_throw_exception_when_update_inactive_employee() {
         Employee deletedEmployee = new Employee(1, "Tom", 30, "MALE", 25000.0, false);
+        EmployeeRequest employeeRequest = new EmployeeRequest("Tom", 30, "MALE", 25000.0);
         when(employeeRepository.findById(1)).thenReturn(Optional.of(deletedEmployee));
-        assertThrows(UpdateInActiveEmployeeException.class, () -> employeeService.updateEmployee(deletedEmployee.getId(), deletedEmployee));
+
+        assertThrows(UpdateInActiveEmployeeException.class, () -> employeeService.updateEmployee(deletedEmployee.getId(), employeeRequest));
     }
 
 }

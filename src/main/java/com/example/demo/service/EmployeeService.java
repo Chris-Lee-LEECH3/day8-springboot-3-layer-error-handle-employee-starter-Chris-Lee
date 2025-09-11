@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EmployeeRequest;
+import com.example.demo.dto.EmployeeResponse;
+import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Employee;
 import com.example.demo.exception.UpdateInActiveEmployeeException;
 import com.example.demo.exception.InvalidAgeEmployeeException;
@@ -18,11 +21,18 @@ public class EmployeeService {
 
     private final IEmployeeRepository employeeRepository;
 
-    public EmployeeService(IEmployeeRepository employeeRepository) {
+    private final EmployeeMapper employeeMapper;
+
+    public EmployeeService(IEmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
+        this.employeeMapper = employeeMapper;
     }
 
-    public List<Employee> getEmployees(String gender, Integer page, Integer size) {
+    public List<EmployeeResponse> getEmployees(String gender, Integer page, Integer size) {
+        return employeeMapper.toResponse(getEmployeeResponses(gender, page, size));
+    }
+
+    private List<Employee> getEmployeeResponses(String gender, Integer page, Integer size) {
         if (gender == null) {
             if (page == null || size == null) {
                 return employeeRepository.findAll();
@@ -40,15 +50,16 @@ public class EmployeeService {
         }
     }
 
-    public Employee getEmployeeById(int id) {
+    public EmployeeResponse getEmployeeById(int id) {
         Employee employee = employeeRepository.findById(id).orElse(null);
         if (employee == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
         }
-        return employee;
+        return employeeMapper.toResponse(employee);
     }
 
-    public Employee createEmployee(Employee employee) {
+    public EmployeeResponse createEmployee(EmployeeRequest createEmployeeRequest) {
+        Employee employee = employeeMapper.toEntity(createEmployeeRequest);
         if (employee.getAge() == null) {
             throw new InvalidAgeEmployeeException("The age of employee must be provided");
         }
@@ -62,20 +73,24 @@ public class EmployeeService {
         }
 
         employee.setActive(true);
-        return employeeRepository.save(employee);
+        return employeeMapper.toResponse(employeeRepository.save(employee));
     }
 
-    public Employee updateEmployee(int id, Employee updatedEmployee) {
-        Employee found = this.getEmployeeById(id);
+    public EmployeeResponse updateEmployee(int id, EmployeeRequest updatedEmployeeRequest) {
+        Employee updatedEmployee = employeeMapper.toEntity(updatedEmployeeRequest);
+        EmployeeResponse found = this.getEmployeeById(id);
         if (!found.getActive()) {
             throw new UpdateInActiveEmployeeException("Cannot update an inactive employee with id: " + id);
         }
         updatedEmployee.setId(found.getId());
-        return employeeRepository.save(updatedEmployee);
+        return employeeMapper.toResponse(employeeRepository.save(updatedEmployee));
     }
 
     public void deleteEmployeeById(int id) {
-        Employee found = this.getEmployeeById(id);
+        Employee found = employeeRepository.findById(id).orElse(null);
+        if (found == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with id: " + id);
+        }
         found.setActive(false);
         employeeRepository.save(found);
     }

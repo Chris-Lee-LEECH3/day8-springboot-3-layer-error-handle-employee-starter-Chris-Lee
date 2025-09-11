@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "companies")
 public class Company {
@@ -9,6 +11,10 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
+    private List<Employee> employees;
 
     public Company() {}
 
@@ -29,4 +35,13 @@ public class Company {
     public void setName(String name) {
         this.name = name;
     }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
+
 }

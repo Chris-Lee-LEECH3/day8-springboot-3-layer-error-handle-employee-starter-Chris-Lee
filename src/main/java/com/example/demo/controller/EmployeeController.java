@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.EmployeeRequest;
+import com.example.demo.dto.EmployeeResponse;
+import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Employee;
 import com.example.demo.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,24 +21,24 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> getEmployees(@RequestParam(required = false) String gender, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+    public List<EmployeeResponse> getEmployees(@RequestParam(required = false) String gender, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         return employeeService.getEmployees(gender, page, size);
     }
 
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable int id) {
+    public EmployeeResponse getEmployeeById(@PathVariable int id) {
         return employeeService.getEmployeeById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee createEmployee(@RequestBody Employee employee) {
+    public EmployeeResponse createEmployee(@RequestBody EmployeeRequest employee) {
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee) {
+    public EmployeeResponse updateEmployee(@PathVariable int id, @RequestBody EmployeeRequest updatedEmployee) {
         return employeeService.updateEmployee(id, updatedEmployee);
     }
 
