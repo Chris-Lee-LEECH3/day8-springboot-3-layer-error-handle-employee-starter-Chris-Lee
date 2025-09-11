@@ -18,10 +18,8 @@ public class CompanyMapper {
         List<Employee> employees = company.getEmployees();
         List<EmployeeResponse> employeesResponse = new ArrayList<>();
 
-        if (employees != null) {
-            if (!employees.isEmpty()) {
-                employeesResponse = getEmployeesResponse(employees);
-            }
+        if (employees != null && !employees.isEmpty()) {
+            employeesResponse = getEmployeesResponse(employees);
         }
 
         companyResponse.setEmployees(employeesResponse);
