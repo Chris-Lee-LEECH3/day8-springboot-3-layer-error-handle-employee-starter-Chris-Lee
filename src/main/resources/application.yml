@@ -9,3 +9,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+  flyway:
+    baseline-on-migrate: true
+    locations: classpath:db/migration
