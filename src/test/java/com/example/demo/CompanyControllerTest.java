@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.controller.CompanyController;
 import com.example.demo.entity.Company;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -23,9 +23,14 @@ public class CompanyControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void cleanCompanies() throws Exception {
-        mockMvc.perform(delete("/companies/all").contentType(MediaType.APPLICATION_JSON));
+//        jdbcTemplate.execute("TRUNCATE TABLE employees;");
+        jdbcTemplate.execute("DELETE FROM companies;");
+        jdbcTemplate.execute("ALTER TABLE companies AUTO_INCREMENT=1;");
     }
 
     private MvcResult createCompanyByName(String name) throws Exception {

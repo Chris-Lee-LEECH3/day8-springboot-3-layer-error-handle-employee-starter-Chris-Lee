@@ -12,11 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/companies")
 public class CompanyController {
-    private final List<Company> companies = new ArrayList<>();
-
-    public void empty() {
-        companies.clear();
-    }
 
     private final CompanyService companyService;
 
@@ -51,12 +46,6 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompany(@PathVariable int id) {
         this.companyService.deleteCompanyById(id);
-    }
-
-    @DeleteMapping("/all")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAllCompanies() {
-        this.companyService.deleteAllCompanies();
     }
 
 }
