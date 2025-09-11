@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.CompanyResponse;
 import com.example.demo.dto.EmployeeRequest;
 import com.example.demo.dto.EmployeeResponse;
 import com.example.demo.dto.mapper.EmployeeMapper;
@@ -84,6 +85,13 @@ public class EmployeeService {
         }
         updatedEmployee.setId(found.getId());
         return employeeMapper.toResponse(employeeRepository.save(updatedEmployee));
+    }
+
+    public void updateCompanyIdForEmployees(List<Employee> employees, int companyId) {
+        employees.forEach(employee -> {
+            employee.setCompanyId(companyId);
+            employeeRepository.save(employee);
+        });
     }
 
     public void deleteEmployeeById(int id) {

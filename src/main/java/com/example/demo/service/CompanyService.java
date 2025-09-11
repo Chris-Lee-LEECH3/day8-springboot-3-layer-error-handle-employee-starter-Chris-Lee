@@ -24,11 +24,11 @@ public class CompanyService {
 
     private final ICompanyRepository companyRepository;
 
-    private final IEmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public CompanyService(ICompanyRepository companyRepository, IEmployeeRepository employeeRepository) {
+    public CompanyService(ICompanyRepository companyRepository, EmployeeService employeeService) {
         this.companyRepository = companyRepository;
-        this.employeeRepository = employeeRepository;
+        this.employeeService = employeeService;
     }
 
     public List<CompanyResponse> getCompanies(Integer page, Integer size) {
@@ -52,12 +52,10 @@ public class CompanyService {
 
         Company newCompany = CompanyMapper.toEntity(company);
         newCompany.setEmployees(employees);
+
         CompanyResponse createdCompany = CompanyMapper.toResponse(companyRepository.save(newCompany));
-        if (employees != null) {
-            employees.forEach(employee -> {
-                employee.setCompanyId(createdCompany.getId());
-                employeeRepository.save(employee);
-            });
+        if (employees != null && !employees.isEmpty()) {
+            employeeService.updateCompanyIdForEmployees(employees, createdCompany.getId());
         }
         return createdCompany;
     }
