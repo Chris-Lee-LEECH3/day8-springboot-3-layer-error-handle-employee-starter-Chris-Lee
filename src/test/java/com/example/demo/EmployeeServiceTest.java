@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTest {
     @InjectMocks
-    private EmployeeService employeeService;;
+    private EmployeeService employeeService;
 
     @Mock
     private IEmployeeRepository employeeRepository;
