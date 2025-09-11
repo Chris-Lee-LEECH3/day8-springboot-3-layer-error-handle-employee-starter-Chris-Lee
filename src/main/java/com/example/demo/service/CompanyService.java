@@ -42,20 +42,14 @@ public class CompanyService {
     }
 
     public Company updateCompany(@PathVariable int id, @RequestBody Company updatedCompany) {
-        Company found = this.getCompanyById(id);
-        if (found == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found with id: " + id);
-        }
-        updatedCompany.setId(id);
+        Company found = getCompanyById(id);
+        updatedCompany.setId(found.getId());
         return companyRepository.save(updatedCompany);
     }
 
     public void deleteCompanyById(int id) {
-        Company found = this.getCompanyById(id);
-        if (found == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found with id: " + id);
-        }
-        companyRepository.deleteById(id);
+        Company found = getCompanyById(id);
+        companyRepository.deleteById(found.getId());
     }
 
 }
