@@ -8,7 +8,7 @@ public class CompanyRequest {
 
     private String name;
 
-    private List<Employee> employees;
+    private List<EmployeeRequest> employees;
 
     public CompanyRequest() {}
 
@@ -16,7 +16,7 @@ public class CompanyRequest {
         this.name = name;
     }
 
-    public CompanyRequest(String name, List<Employee> employees) {
+    public CompanyRequest(String name, List<EmployeeRequest> employees) {
         this.name = name;
         this.employees = employees;
     }
@@ -29,11 +29,11 @@ public class CompanyRequest {
         this.name = name;
     }
 
-    public List<Employee> getEmployees() {
+    public List<EmployeeRequest> getEmployees() {
         return employees;
     }
 
-    public void setEmployees(List<Employee> employees) {
+    public void setEmployees(List<EmployeeRequest> employees) {
         this.employees = employees;
     }
 

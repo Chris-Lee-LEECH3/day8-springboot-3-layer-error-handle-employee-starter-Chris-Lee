@@ -27,4 +27,8 @@ public class EmployeeMapper {
         return employee;
     }
 
+    public static List<Employee> toEntity(List<EmployeeRequest> employeeRequest) {
+        return employeeRequest.stream().map(EmployeeMapper::toEntity).toList();
+    }
+
 }

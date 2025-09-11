@@ -12,6 +12,11 @@ public class CompanyMapper {
     public static CompanyResponse toResponse(Company company) {
         CompanyResponse companyResponse = new CompanyResponse();
         BeanUtils.copyProperties(company, companyResponse);
+        if (company.getEmployees() != null) {
+            company.getEmployees().forEach(employee -> {
+                companyResponse.getEmployees().add(EmployeeMapper.toResponse(employee));
+            });
+        }
         return companyResponse;
     }
 

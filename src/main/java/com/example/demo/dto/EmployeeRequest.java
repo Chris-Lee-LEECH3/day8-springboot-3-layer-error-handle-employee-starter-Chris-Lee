@@ -7,12 +7,12 @@ public class EmployeeRequest {
 
     private String name;
 
-    @Min(value = 0, message = "Salary must be positive number")
     private Integer age;
 
     @NotNull(message = "Gender cannot be null")
     private String gender;
 
+    @Min(value = 0, message = "Salary must be positive number")
     private Double salary;
 
     public EmployeeRequest() {}

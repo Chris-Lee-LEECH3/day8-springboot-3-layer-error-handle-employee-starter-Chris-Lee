@@ -2,8 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.dto.CompanyRequest;
 import com.example.demo.dto.CompanyResponse;
+import com.example.demo.dto.EmployeeRequest;
 import com.example.demo.dto.mapper.CompanyMapper;
+import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Company;
+import com.example.demo.entity.Employee;
 import com.example.demo.repository.ICompanyRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +40,10 @@ public class CompanyService {
     }
 
     public CompanyResponse createCompany(CompanyRequest company) {
+        List<EmployeeRequest> employeeRequests = company.getEmployees();
+        List<Employee> employees = EmployeeMapper.toEntity(employeeRequests);
         Company newCompany = CompanyMapper.toEntity(company);
+        newCompany.setEmployees(employees);
         return CompanyMapper.toResponse(companyRepository.save(newCompany));
     }
 
