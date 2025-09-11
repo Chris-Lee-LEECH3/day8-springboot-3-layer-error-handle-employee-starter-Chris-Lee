@@ -8,6 +8,7 @@ import com.example.demo.dto.mapper.EmployeeMapper;
 import com.example.demo.entity.Company;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.ICompanyRepository;
+import com.example.demo.repository.IEmployeeRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,11 @@ public class CompanyService {
 
     private final ICompanyRepository companyRepository;
 
-    public CompanyService(ICompanyRepository companyRepository) {
+    private final IEmployeeRepository employeeRepository;
+
+    public CompanyService(ICompanyRepository companyRepository, IEmployeeRepository employeeRepository) {
         this.companyRepository = companyRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public List<CompanyResponse> getCompanies(Integer page, Integer size) {
@@ -41,10 +45,21 @@ public class CompanyService {
 
     public CompanyResponse createCompany(CompanyRequest company) {
         List<EmployeeRequest> employeeRequests = company.getEmployees();
-        List<Employee> employees = EmployeeMapper.toEntity(employeeRequests);
+        List<Employee> employees = null;
+        if (employeeRequests != null) {
+            employees = EmployeeMapper.toEntity(employeeRequests);
+        }
+
         Company newCompany = CompanyMapper.toEntity(company);
         newCompany.setEmployees(employees);
-        return CompanyMapper.toResponse(companyRepository.save(newCompany));
+        CompanyResponse createdCompany = CompanyMapper.toResponse(companyRepository.save(newCompany));
+        if (employees != null) {
+            employees.forEach(employee -> {
+                employee.setCompanyId(createdCompany.getId());
+                employeeRepository.save(employee);
+            });
+        }
+        return createdCompany;
     }
 
     public CompanyResponse getCompanyById(int id) {
