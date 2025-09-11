@@ -4,13 +4,15 @@ import com.example.demo.entity.Employee;
 import com.example.demo.exception.UpdateInActiveEmployeeException;
 import com.example.demo.exception.InvalidAgeEmployeeException;
 import com.example.demo.exception.InvalidSalaryEmployeeException;
-import com.example.demo.repository.EmployeeRepository;
+import com.example.demo.repository.IEmployeeRepository;
 import com.example.demo.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -23,12 +25,12 @@ public class EmployeeServiceTest {
     private EmployeeService employeeService;;
 
     @Mock
-    private EmployeeRepository employeeRepository;
+    private IEmployeeRepository employeeRepository;
 
     @Test
     public void should_return_throw_exception_when_create_a_employee() {
         Employee  employee = new Employee(null, "Tom", 20, "MALE", 2000.0);
-        when(employeeRepository.createEmployee(any(Employee.class))).thenReturn(employee);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
         Employee employeeResult = employeeService.createEmployee(employee);
         assertEquals(employeeResult.getAge(), employee.getAge());
     }
@@ -49,7 +51,7 @@ public class EmployeeServiceTest {
     public void should_return_employee_active_true_when_create_employee() {
         Employee employee = new Employee(null, "Tom", 30, "MALE", 20000.0);
         Employee createdEmployee = new Employee(1, "Tom", 30, "MALE", 20000.0, true);
-        when(employeeRepository.createEmployee(any(Employee.class))).thenReturn(createdEmployee);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(createdEmployee);
         Employee employeeResult = employeeService.createEmployee(employee);
         assertTrue(employeeResult.getActive());
     }
@@ -58,17 +60,17 @@ public class EmployeeServiceTest {
     public void should_return_employee_active_false_when_delete_employee() {
         Employee employee = new Employee(1, "Tom", 30, "Male", 20000.0);
         assertTrue(employee.getActive());
-        when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
+        when(employeeRepository.findById(1)).thenReturn(Optional.of(employee));
 
         employeeService.deleteEmployeeById(1);
 
-        verify(employeeRepository).updateEmployee(eq(1), argThat(e -> !e.getActive()));
+        verify(employeeRepository).save(argThat(e -> !e.getActive()));
     }
 
     @Test
     public void should_throw_exception_when_update_inactive_employee() {
         Employee deletedEmployee = new Employee(1, "Tom", 30, "MALE", 25000.0, false);
-        when(employeeRepository.getEmployeeById(1)).thenReturn(deletedEmployee);
+        when(employeeRepository.findById(1)).thenReturn(Optional.of(deletedEmployee));
         assertThrows(UpdateInActiveEmployeeException.class, () -> employeeService.updateEmployee(deletedEmployee.getId(), deletedEmployee));
     }
 
